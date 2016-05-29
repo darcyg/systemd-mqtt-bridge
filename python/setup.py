@@ -10,5 +10,6 @@ setup(
 	author_email = 'contact@kevinross.name',
 	url = 'https://github.com/kevinross/systemd-mqtt-bridge',
 	packages = ['systemd_mqtt'],
-	scripts = ['systemd_mqtt/systemd_mqtt.py']
+	scripts = ['systemd_mqtt/systemd_mqtt.py'],
+	install_requires = ['paho-mqtt', 'pydbus', 'expiringdict']
 )
