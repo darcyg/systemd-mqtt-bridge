@@ -1,9 +1,12 @@
-import time, paho.mqtt.client as mqtt, os
+#!/usr/bin/env python
+import time, paho.mqtt.client as mqtt, os, sys
 from pydbus.bus import Bus
 from gi.repository import GObject, Gio
 from expiringdict import ExpiringDict
 from functools import partial
 
+# when run under systemd, no hostname in environ. Not worrying about window's COMPUTERNAME as systemd won't run there
+# and this is intended to run on the same host as the one to be monitored
 if 'HOSTNAME' not in os.environ:
 	os.environ['HOSTNAME'] = open('/etc/hostname').read().strip()
 
@@ -161,7 +164,13 @@ class SystemdMqttBridge(MqttSystemdListener, MqttListener):
 	def handle_refresh(self):
 		self.publish_all()
 
-bridge = SystemdMqttBridge("pellet.cave.kevinross.name")
+if len(sys.argv) == 1:
+	print 'must pass broker hostname and mqtt prefix, in that order'
+	sys.exit(1)
+if len(sys.argv) == 2:
+	print 'must pass mqtt prefix'
+	sys.exit(1)
+bridge = SystemdMqttBridge(sys.argv[1], sys.argv[2])
 bridge.handle_refresh()
 bridge.run()
 
